@@ -67,15 +67,8 @@
     </div>
     <div class="clock">
       <svg viewBox="0 0 200 200" aria-label="ポモドーロ時計">
-        <defs>
-          <filter id="sketch" x="-30%" y="-30%" width="160%" height="160%">
-            <feTurbulence type="fractalNoise" baseFrequency="0.022" numOctaves="2" seed="7" result="n"/>
-            <feDisplacementMap in="SourceGraphic" in2="n" scale="3.2" xChannelSelector="R" yChannelSelector="G"/>
-          </filter>
-        </defs>
-        <circle cx="100" cy="100" r="94" fill="var(--face)" stroke="var(--tick-strong)" stroke-width="2" filter="url(#sketch)"/>
         <path id="arc" fill="none" stroke="var(--red)" stroke-width="5" stroke-linecap="round" opacity="0"/>
-        <g id="ticks" filter="url(#sketch)"></g>
+        <g id="ticks"></g>
         <text id="timeText" class="timeText" x="100" y="74" text-anchor="middle">--:--:--</text>
         <text id="dateText" class="dateText" x="100" y="150" text-anchor="middle">--/--</text>
         <text id="remainText" class="remainText" x="100" y="170" text-anchor="middle"></text>
@@ -106,23 +99,17 @@
   const dateText=$("dateText"), timeText=$("timeText"), remainText=$("remainText");
   const todayLeft=$("todayLeft"), chips=$("chips");
   const ticks=$("ticks");
-  for(let i=0;i<60;i++){
-    const ang=(i*6)*Math.PI/180, isHour=i%5===0;
-    if(isHour){
-      const r1=80, r2=90;
-      const ln=document.createElementNS("http://www.w3.org/2000/svg","line");
-      ln.setAttribute("x1",CX+r1*Math.sin(ang)); ln.setAttribute("y1",CY-r1*Math.cos(ang));
-      ln.setAttribute("x2",CX+r2*Math.sin(ang)); ln.setAttribute("y2",CY-r2*Math.cos(ang));
-      ln.setAttribute("stroke","var(--tick-strong)");
-      ln.setAttribute("stroke-width",2);
-      ln.setAttribute("stroke-linecap","round");
-      ticks.appendChild(ln);
-    } else {
-      const dot=document.createElementNS("http://www.w3.org/2000/svg","circle");
-      dot.setAttribute("cx",CX+88*Math.sin(ang)); dot.setAttribute("cy",CY-88*Math.cos(ang));
-      dot.setAttribute("r",0.9); dot.setAttribute("fill","var(--tick)");
-      ticks.appendChild(dot);
-    }
+  // 12本のシンプルな目盛り線だけ（輪郭・分の点なし）
+  for(let i=0;i<12;i++){
+    const ang=(i*30)*Math.PI/180;
+    const r1=80, r2=90;
+    const ln=document.createElementNS("http://www.w3.org/2000/svg","line");
+    ln.setAttribute("x1",CX+r1*Math.sin(ang)); ln.setAttribute("y1",CY-r1*Math.cos(ang));
+    ln.setAttribute("x2",CX+r2*Math.sin(ang)); ln.setAttribute("y2",CY-r2*Math.cos(ang));
+    ln.setAttribute("stroke","var(--sub)");
+    ln.setAttribute("stroke-width",1.6);
+    ln.setAttribute("stroke-linecap","round");
+    ticks.appendChild(ln);
   }
   function pt(deg,r){ const a=(deg-90)*Math.PI/180; return [CX+r*Math.cos(a), CY+r*Math.sin(a)]; }
   function arcPath(s,e,r){ let sw=e-s; if(sw<0)sw+=360; const la=sw>180?1:0; const[x1,y1]=pt(s,r),[x2,y2]=pt(e,r); return `M ${x1} ${y1} A ${r} ${r} 0 ${la} 1 ${x2} ${y2}`; }
